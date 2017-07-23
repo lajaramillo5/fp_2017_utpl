@@ -1,0 +1,391 @@
+"""
+     nombre:luis
+     tema:Juego hecho en pilas-engine
+"""
+# aqui importo las librerias que voy a usay y la musica que voy a poner
+import pilasengine
+import random
+
+# aqui doy  incio para comenzar a programar
+pilas = pilasengine.iniciar()
+
+
+# aqui voy a crear  la clase escenamenu la cual sera la primera pantalla de mi juego
+class EscenaMenu(pilasengine.escenas.Escena):
+    def iniciar(self):
+
+        self.fondo = self.pilas.fondos.Fondo("Imagenes/fondoinicio.png")#cargo un fondo para mi menu
+        self.Mi_Menu = pilas.actores.Menu(#aqui comienzo a crear a mi menu con las opccioes correspondientes
+            [
+                (u"Jugar", self.Opcciones),
+                (u"Ayuda", self.Ayuda),
+                (u"Salir", self.Salir_de_Pilas)
+                
+            ])
+
+        Nombre_de_juego = pilas.actores.Texto(u"Menu Principal")
+        Nombre_de_juego.color = pilas.colores.amarillo
+        Nombre_de_juego.y = 50
+#aqui le doy funcionalidad a cada opccion delmenu
+    def actualizar(self):
+        pass
+
+    def Ayuda(self):
+        pilas.escenas.EscenaAyuda()
+
+    def Opcciones(self):
+        pilas.escenas.Opcciones()
+        
+    def Salir_de_Pilas(self):
+        pilas.terminar()
+# aqui creo la clase opciones que  sera la que abarque los niveles de mi juego       
+class Opcciones(pilasengine.escenas.Escena):
+    def iniciar(self):
+
+
+        self.fondo_juego = pilas.fondos.Noche()
+        self.fondo_juego.imagen = "Imagenes/opccion.png"
+        self.pilas.actores.Boton_Regresar()#aqui implemento el boton regresar para volver a la pantalla principal
+        self.Mi_Menu = pilas.actores.Menu(#aqui comienzo a crear a mi menu con las opccioes correspondientes
+            [
+                (u"Facil", self.Ir_al_juego),
+                (u"Dificil", self.nivel)
+                
+            ])
+
+        Nombre_de_juego = pilas.actores.Texto(u"Elige nivel")
+        Nombre_de_juego.color = pilas.colores.amarillo
+        Nombre_de_juego.y = 50
+
+
+
+  #aqui le doy funcionalidad a cada opccion del sub-menu      
+    def nivel(self):
+        pilas.escenas.Escena_Juego1()
+
+    def Ir_al_juego(self):
+        pilas.escenas.Escena_Juego()
+
+
+#aqui creo la clase ayuda que es la cual va indicar al usuario lo que tiene quehacer en el juego
+class EscenaAyuda(pilasengine.escenas.Escena):
+    def iniciar(self):
+        self.fondo_juego = pilas.fondos.Noche()
+        self.fondo_juego.imagen = "Imagenes/fondo.png"#le doy un fondo
+        self.Boton_Volver = pilas.interfaz.Boton("Volver al Menu")#le doy elboton volver a la pantalla principal
+        self.Boton_Volver.y = 220
+        self.Boton_Volver.x = 250
+        self.Boton_Volver.conectar(self.Volver)
+
+    def Volver(self):
+        pilas.escenas.EscenaMenu()
+
+    def actualizar(self):
+        pass
+
+#Creo mi clase  de actor principal
+class Actor_Principal(pilasengine.actores.Actor):
+    def iniciar(self):
+        self.imagen = pilas.imagenes.cargar_grilla("Imagenes/naruto.png")#aqui cargo un personaje externo 
+        self.x = 0
+        self.y = -170
+        self.aprender(pilas.habilidades.LimitadoABordesDePantalla)#le doy una orden de no traspazar los limites de los bordes
+        self.radio_de_colision = 70
+
+    def actualizar(self):
+        if pilas.control.izquierda:
+            self.x -= 8
+            self.espejado = False
+            self.imagen.avanzar(velocidad=10)
+        if pilas.control.derecha:
+            self.x += 8
+            self.espejado = True
+            self.imagen.avanzar(velocidad=10)
+
+#Creo mi clase boton para regresar a lapntalla principal
+class Boton_Regresar(pilasengine.actores.Actor):
+    def iniciar(self):
+        self.imagen = "Imagenes/regresar.png"#cargo una imagen que haga de boton 
+        self.cuando_hace_click = self.volver_a_escena_principal
+        self.y = -213
+        self.x = -283
+        self.escala = 0.8
+
+    def volver_a_escena_principal(self, evento):
+        self.pilas.escenas.EscenaMenu()
+
+
+#aqui creo clase nuez que es la recompenza de mi personaje 
+class Nuez1(pilasengine.actores.Actor):
+    def iniciar(self):
+        self.imagen = "Imagenes/ramen1.jpg"#cargo una imagen para que haga de  mi recompenza
+        self.aprender(pilas.habilidades.PuedeExplotarConHumo)#le doy la habilidad de desaparecer cuandolo toquen o toque el suelo
+        self.x = pilas.azar(-1390, 1390) * 0.2
+        self.y = 290
+        self.velocidad = 0
+        self.radio_de_colision = 14
+
+    def actualizar(self):
+        self.velocidad += 0.02
+        self.y -= self.velocidad
+        self.rotacion += 2
+
+        if self.y < -300:
+            self.eliminar()
+
+#aqui creo clase nuez que es la recompenza de mi personaje 
+class Nuez2(pilasengine.actores.Actor):
+    def iniciar(self):
+        self.imagen = "Imagenes/ramen2.jpg"#cargo una imagen para que haga de  mi recompenza
+        self.aprender(pilas.habilidades.PuedeExplotarConHumo)#le doy la habilidad de desaparecer cuandolo toquen o toque el suelo
+        self.x = pilas.azar(-1390, 1390) * 0.2
+        self.y = 290
+        self.velocidad = 0
+        self.radio_de_colision = 14
+
+    def actualizar(self):
+        self.velocidad += 0.03
+        self.y -= self.velocidad
+        self.rotacion += 2
+
+        if self.y < -300:
+            self.eliminar()
+
+#aqui creo clase nuez que es el enemigo de mi personaje 
+class Enemigo(pilasengine.actores.Actor):
+    def iniciar(self):
+        self.imagen = "Imagenes/kunai.png"#cargo una imagen para que haga de  mi enemigo
+        self.x = pilas.azar(-1390, 1390) * 0.2
+        self.y = 290
+        self.velocidad = 0
+        rectangulo = pilas.fisica.Rectangulo(
+            0, 0, 90, 40, sensor=True, dinamica=False)
+        self.figura_de_colision = rectangulo
+
+    def actualizar(self):
+        self.velocidad += 0.08
+        self.y -= self.velocidad
+
+        if self.y < -300:
+            self.eliminar()
+#aqui creo clase nuez que es el enemigo de mi personaje     
+class Enemigo1(pilasengine.actores.Actor):
+    def iniciar(self):
+        self.imagen = "Imagenes/kunai.png"#cargo una imagen para que haga de  mi enemigo
+        self.x = pilas.azar(-1390, 1390) * 0.2
+        self.y = 290
+        self.velocidad = 10
+        rectangulo = pilas.fisica.Rectangulo(
+            0, 0, 90, 40, sensor=True, dinamica=False)
+        self.figura_de_colision = rectangulo
+
+    def actualizar(self):
+        self.velocidad += 0.08
+        self.y -= self.velocidad
+
+        if self.y < -300:
+            self.eliminar()
+
+#Aui creo la clase juegoque sera la de mi juegoen modo facil
+class Escena_Juego(pilasengine.escenas.Escena):
+    def iniciar(self):
+        #aqui creo una tarea para que me genere mi recompenza y emigos x tiempo
+        self.Tex()
+        self.pilas.actores.Actor_Principal()
+        self.pilas.tareas.siempre(1, self.crear_un_actor_Nuez1)
+        self.pilas.tareas.siempre(1, self.crear_un_actor_Nuez2)
+        self.pilas.tareas.siempre(4, self.crear_un_actor_Enemigo)
+        self.pilas.actores.Boton_Regresar()
+
+        self.pilas.colisiones.agregar(
+            'Actor_Principal', 'Nuez1', self.colision1)
+        self.pilas.colisiones.agregar(
+            'Actor_Principal', 'Nuez2', self.colision2)
+        self.pilas.colisiones.agregar(
+            'Actor_Principal', 'Enemigo', self.colision5)
+    #doy un fndo a la pantalla
+    def Tex(self):
+        FondoJuego = pilas.fondos.Fondo()
+        FondoJuego.imagen = pilas.imagenes.cargar("Imagenes/fondomenu.png")
+        self.puntaje = pilas.actores.Puntaje(-20, 200,
+                                             color=pilas.colores.Color(0, 204, 255))
+        self.puntaje.escala = 1.5
+    #llamo a mis actores  creados anteriormente
+    def crear_Principal1(self):
+        self.pilas.actores.Actor_Principal()
+
+    def crear_un_actor_Nuez1(self):
+        self.pilas.actores.Nuez1()
+
+    def crear_un_actor_Nuez2(self):
+        self.pilas.actores.Nuez2()
+
+    def crear_un_actor_Enemigo(self):
+        self.pilas.actores.Enemigo()
+    def regresar(self, evento):
+        pilas.escenas.PantallaMenu()
+    
+#aqui doy funcionalidad a cada actor que se va generando
+#aqui doy funcionalidad a mis recompenzas
+    def colision1(self, Pr, Nue1):
+        Nue1.eliminar()
+        self.puntaje.aumentar(5)#aqui doy funcionalidad de ir aumentando de 5 en 5 puntos
+        print(self.puntaje.valor)
+        pilas.utils.interpolar(self.puntaje, 'escala',
+                               1.5, duracion=0.5, tipo='elastico')
+        self.puntaje.rotacion = random.randint(0, 60)
+        self.puntaje.rotacion = [0], 0.6
+
+
+    def colision2(self, Pr, Nue2):
+        Nue2.eliminar()
+        self.puntaje.aumentar(5)#aqui doy funcionalidad de ir aumentando de 5 en 5 puntos
+        print(self.puntaje.valor)
+        pilas.utils.interpolar(self.puntaje, 'escala',
+                               1.5, duracion=0.5, tipo='elastico')
+        self.puntaje.rotacion = random.randint(30, 60)
+        self.puntaje.rotacion = [0], 0.6
+        if self.puntaje.valor < 100:#aqui le doy un limite a la puntuacion para que mi actor pricipal gane
+                self.puntaje.aumentar(1)
+        else:
+                pilas.avisar("Haz Ganado!!!")#aqui aparecera un mensaje diciendo has ganado
+                Pr.eliminar()
+                pilas.escena_actual().tareas.eliminar_todas()
+
+
+ #aqui doy funcionalidad a mis enemigos que si mi personaje los toca pierde automaticamnete
+
+    def colision5(self, Pr, Enem):
+        Enem.eliminar()
+        Pr.eliminar()
+              #creo una tarea que me presente un mensaje con el total de punto y que diga fin de juego
+        pilas.escena_actual().tareas.eliminar_todas()
+        t1 = pilas.actores.Texto("RECAUDASTE\n\n\n")
+        t1.x = 20
+        t1.y = 100
+        t2 = pilas.actores.Texto("FIN DEL JUEGO")
+        t2.x = 20
+        t2.y = 0
+
+
+
+#Aui creo la clase juegoque sera la de mi juegoen modo dificil
+class Escena_Juego1(pilasengine.escenas.Escena):
+
+
+    def iniciar(self):
+#aqui creo una tarea para que me genere mi recompenza y emigos cada cierto tiempo
+        self.Tex()
+        self.pilas.actores.Actor_Principal()
+        self.pilas.tareas.siempre(1, self.crear_un_actor_Nuez1)
+        self.pilas.tareas.siempre(3, self.crear_un_actor_Nuez2)
+        self.pilas.tareas.siempre(2, self.crear_un_actor_Enemigo1)
+        self.pilas.tareas.siempre(2, self.crear_un_actor_Enemigo)
+        self.pilas.actores.Boton_Regresar()
+
+        self.pilas.colisiones.agregar(
+            'Actor_Principal', 'Nuez1', self.colision1)
+        self.pilas.colisiones.agregar(
+            'Actor_Principal', 'Nuez2', self.colision2)
+        self.pilas.colisiones.agregar(
+            'Actor_Principal', 'Enemigo1', self.colision6)
+        self.pilas.colisiones.agregar(
+            'Actor_Principal', 'Enemigo', self.colision5)
+
+        
+ #doy un fondo a la pantalla
+    def Tex(self):
+        FondoJuego = pilas.fondos.Fondo()
+        FondoJuego.imagen = pilas.imagenes.cargar("Imagenes/fondodificil.png")
+        self.puntaje = pilas.actores.Puntaje(-20, 200,
+                                             color=pilas.colores.Color(0, 204, 255))
+        self.puntaje.escala = 1.5
+    #llamo a mis actores  creados anteriormente
+    def crear_Principal1(self):
+        self.pilas.actores.Actor_Principal()
+
+    def crear_un_actor_Nuez1(self):
+        self.pilas.actores.Nuez1()
+
+    def crear_un_actor_Nuez2(self):
+        self.pilas.actores.Nuez2()
+    
+    def crear_un_actor_Enemigo1(self):
+        self.pilas.actores.Enemigo1()
+    
+    def crear_un_actor_Enemigo(self):
+        self.pilas.actores.Enemigo()
+#aqui doy funcionalidad a cada actor que se va generando
+ #aqui doy funcionalidad a mis recompensas 
+    def colision1(self, Pr, Nue1):
+        Nue1.eliminar()
+        self.puntaje.aumentar(1) #aqui doy funcionalidad de que mi puntuacion aumente en 1 punto cada vez
+        print(self.puntaje.valor)
+        pilas.utils.interpolar(self.puntaje, 'escala',
+                               1.5, duracion=0.5, tipo='elastico')
+        self.puntaje.rotacion = random.randint(0, 60)
+        self.puntaje.rotacion = [0], 0.6
+
+
+    def colision2(self, Pr, Nue2):
+        Nue2.eliminar()
+        self.puntaje.aumentar(1)#aqui doy funcionalidad de que mi puntuacion aumente en 1 punto cada vez
+        print(self.puntaje.valor)
+        pilas.utils.interpolar(self.puntaje, 'escala',
+                               1.5, duracion=0.5, tipo='elastico')
+        self.puntaje.rotacion = random.randint(30, 60)
+        self.puntaje.rotacion = [0], 0.6
+        if self.puntaje.valor < 50:#aqui ledoy un limite a lappuntuacion para que mi actor pricipal gane
+                self.puntaje.aumentar(1)
+        else:
+                pilas.avisar("Haz Ganado!!!")#aqui aparecera un mensaje diciendo has ganado
+                Pr.eliminar()
+                pilas.escena_actual().tareas.eliminar_todas()
+                
+ #aqui doy funcionalidad a mis enemigos que si mi personaje los toca pierde automaticamnete
+    def colision5(self, Pr, Enem):
+        Enem.eliminar()
+        pilas.utils.interpolar(self.puntaje, 'escala',
+                               4.5, duracion=0.5, tipo='elastico')
+        Pr.eliminar()
+        #creo una tarea que me presente un mensaje con el total de punto y que diga fin de juego
+        pilas.escena_actual().tareas.eliminar_todas()
+        t1 = pilas.actores.Texto("RECAUDASTE\n\n\n")
+        t1.x = 20
+        t1.y = 100
+        t2 = pilas.actores.Texto("FIN DEL JUEGO")
+        t2.x = 20
+        t2.y = 0
+
+
+    def colision6(self, Pr, Enem):
+        Enem.eliminar()
+        pilas.utils.interpolar(self.puntaje, 'escala',
+                               4.5, duracion=0.5, tipo='elastico')
+        Pr.eliminar()
+        pilas.escena_actual().tareas.eliminar_todas()
+        t1 = pilas.actores.Texto("RECAUDASTE\n\n\n")
+        t1.x = 20
+        t1.y = 100
+        t2 = pilas.actores.Texto("FIN DEL JUEGO")
+        t2.x = 20
+        t2.y = 0
+
+
+                
+#Aqui vinculo las escenas creadas enel juego
+pilas.escenas.vincular(EscenaMenu)
+pilas.escenas.vincular(Escena_Juego)
+pilas.escenas.vincular(Escena_Juego1)
+pilas.actores.vincular(Boton_Regresar)
+pilas.actores.vincular(Actor_Principal)
+pilas.actores.vincular(Nuez1)
+pilas.actores.vincular(Nuez2)
+pilas.actores.vincular(Enemigo)
+pilas.actores.vincular(Enemigo1)
+pilas.escenas.vincular(EscenaAyuda)
+pilas.escenas.vincular(Opcciones)
+#Aqui hagoque mi fuego siempre inicie en el menu principal
+pilas.escenas.EscenaMenu()
+
+pilas.ejecutar()
